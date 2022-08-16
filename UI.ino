@@ -1,8 +1,22 @@
-void show_preset_screen(int preset) {
+bool is_selected() {
+  if (new_preset == current_preset) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+void show_preset_screen(int preset, String name) {
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.print("Preset ");
+  lcd.print("Preset: ");
   lcd.print(preset);
+  if (is_selected() == true) {
+    lcd.print("*");
+  }
+  lcd.setCursor(0, 1);
+  lcd.print("Name: ");
+  lcd.print(name);
 }
 
 void show_splash_screen() {
@@ -104,7 +118,7 @@ void switch_scan()
             if (new_preset > 3) {
               new_preset = 0;
             }
-            show_preset_screen(new_preset + 1);
+            show_preset_screen(new_preset + 1, presets[new_preset].Name);
             break;
 
           case PRESET_DOWN_SWITCH_PRESSED:
@@ -112,19 +126,20 @@ void switch_scan()
             new_preset--;
             if (new_preset < 0) {
               new_preset = 3;
-            }
-            show_preset_screen(new_preset + 1);
+            }          
+            show_preset_screen(new_preset + 1, presets[new_preset].Name);
             break;
 
           case PRESET_SELECT_SWITCH_PRESSED:
             if (tunerOn == true) break;
+            selected_preset = new_preset + 1;
             change_hardware_preset(new_preset);
             break;
 
           case TUNER_SWITCH_PRESSED:
             if (tunerOn == true) {
               tunerOn = false;
-              show_preset_screen(display_preset_num);
+              show_preset_screen(display_preset_num, preset.Name);
             } else {
               tunerOn = true;
               show_tuner_screen();

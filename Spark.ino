@@ -278,7 +278,7 @@ bool  update_spark_state() {
         break;
     }
 
-    // all the processing for UI update
+    // Processing for mobile App UI update
     switch (cmdsub) {
       case 0x0201:  
          if (ui_update_in_progress == UI_CUSTOM) {

@@ -1,10 +1,5 @@
-
 #include "config.h"
 #include "UI.h"
-
-#include <SPI.h>
-#include <Wire.h>
-
 #include "Spark.h"
 #include "SparkIO.h"
 
@@ -14,10 +9,16 @@ char param_str[50];
 int param = -1;
 bool isTunerMode;
 bool scan_result = false;
+
 int new_preset;
+int current_preset;
 
 void setup()
 {
+#ifdef DEBUG_ON
+  Serial.begin(115200);
+#endif
+
   // Setup LEDs
   pinMode(BT_LED, OUTPUT);
   pinMode(DRIVE_LED, OUTPUT);
@@ -27,13 +28,9 @@ void setup()
 
   show_splash_screen();
 
-  Wire.begin(0, 4);
-  Serial.begin(115200);
-
   for (int i = 0; i < NUM_SWITCHES; i++)
     pinMode(switchPins[i], INPUT_PULLUP);
 
-  Serial.println("Connecting...");
   lcd.setCursor(0, 3);
   lcd.print("Connecting...");
 
@@ -42,7 +39,6 @@ void setup()
     scan_result = spark_state_tracker_start();
   }
 
-  Serial.println("Connected");
   lcd.setCursor(0, 3);
   lcd.print("Loading Presets...");
 
@@ -52,13 +48,27 @@ void setup()
     update_spark_state();
   }
 
-  new_preset = preset.curr_preset;
-  show_preset_screen(preset.curr_preset + 1);
+  current_preset = preset.curr_preset;
+  new_preset = current_preset - 1;
+  show_preset_screen(current_preset, preset.Name);
   update_leds(preset);
 }
 
 void loop()
 {
-  switch_scan();  
+  switch_scan();
   update_spark_state();
+
+  if (selected_preset != current_preset) {
+    DEB("selected_preset ");
+    DEBUG(selected_preset);
+
+    current_preset = selected_preset;
+    new_preset = current_preset - 1;
+    
+    if (tunerOn == false) {
+      update_leds(presets[current_preset]);
+      show_preset_screen(selected_preset + 1, presets[current_preset].Name);
+    }
+  }
 }
