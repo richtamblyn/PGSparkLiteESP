@@ -299,6 +299,9 @@ bool update_spark_state()
 
     case 0x0364:
       isTunerMode = true;
+      DEB("Tuner: ");
+      DEBUG(msg.val);
+      update_tuner(msg);
       break;
 
     case 0x0365:

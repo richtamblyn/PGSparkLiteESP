@@ -41,12 +41,41 @@ void show_tuner_screen()
   lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print("Tuner");
+}
+
+void update_tuner(SparkMessage msg)
+{
   lcd.setCursor(9, 1);
-  lcd.print("E");
-  lcd.setCursor(9, 2);
-  lcd.print("^");
-  lcd.setCursor(0, 3);
-  lcd.print("<--------|-------->");
+  if (msg.val == -1.0)
+  {
+    if (ignoreTuner == false)
+    {
+      lcd.print("  ");
+      lcd.setCursor(6, 3);
+      lcd.print("          ");
+      ignoreTuner = true;
+    }
+  }
+  else
+  {
+    lcd.print(note_names[constrain(msg.param1 + 1, 0, 13)]);
+    lcd.print(" ");
+    lcd.setCursor(6, 3);
+    if (msg.val < 0.48)
+    {
+      lcd.print("< FLAT    ");
+    }
+    else if (msg.val > 0.54)
+    {
+      lcd.print("  SHARP > ");
+    }
+    else
+    {
+      lcd.print("< GOOD >  ");
+    }
+
+    ignoreTuner = false;
+  }
 }
 
 void switch_scan()
@@ -166,7 +195,7 @@ void switch_scan()
         case PRESET_SELECT_SWITCH_PRESSED:
           if (tunerOn == true)
             break;
-          current_preset = selected_preset;      
+          current_preset = selected_preset;
           change_hardware_preset(selected_preset);
           update_leds(presets[current_preset]);
           show_preset_screen(selected_preset + 1, presets[current_preset].Name);
@@ -176,7 +205,8 @@ void switch_scan()
           if (tunerOn == true)
           {
             tunerOn = false;
-            show_preset_screen(display_preset_num, preset.Name);
+            lcd.clear();
+            show_preset_screen(selected_preset + 1, presets[current_preset].Name);
           }
           else
           {

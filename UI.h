@@ -19,4 +19,7 @@ bool delayOn = false;
 bool modOn = false;
 bool reverbOn = false;
 
+const String note_names[] = {"...","C","C#","D","D#","E","F","F#","G","G#","A","A#","B","..."};
+bool ignoreTuner = false;
+
 #endif
