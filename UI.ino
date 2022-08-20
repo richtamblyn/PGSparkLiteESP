@@ -1,17 +1,23 @@
-bool is_selected() {
-  if (new_preset == current_preset) {
+bool is_selected()
+{
+  if (selected_preset == current_preset)
+  {
     return true;
-  } else {
+  }
+  else
+  {
     return false;
   }
 }
 
-void show_preset_screen(int preset, String name) {
+void show_preset_screen(int preset, String name)
+{
   lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print("Preset: ");
   lcd.print(preset);
-  if (is_selected() == true) {
+  if (is_selected() == true)
+  {
     lcd.print("*");
   }
   lcd.setCursor(0, 1);
@@ -19,7 +25,8 @@ void show_preset_screen(int preset, String name) {
   lcd.print(name);
 }
 
-void show_splash_screen() {
+void show_splash_screen()
+{
   lcd.init();
   lcd.backlight();
   lcd.setCursor(0, 0);
@@ -29,7 +36,8 @@ void show_splash_screen() {
   lcd.print(version);
 }
 
-void show_tuner_screen() {
+void show_tuner_screen()
+{
   lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print("Tuner");
@@ -62,127 +70,171 @@ void switch_scan()
         Serial.print("Got a switch ");
         Serial.println(i);
 
-        switch (i) {
+        switch (i)
+        {
 
-          case DRIVE_SWITCH_PRESSED:
-            if (tunerOn == true) break;
-            if (driveOn == true) {
-              driveOn = false;
-              digitalWrite(DRIVE_LED, LOW);
-            } else {
-              driveOn = true;
-              digitalWrite(DRIVE_LED, HIGH);
-            }
-            change_drive_onoff(driveOn);
+        case DRIVE_SWITCH_PRESSED:
+          if (tunerOn == true)
             break;
+          if (driveOn == true)
+          {
+            driveOn = false;
+            digitalWrite(DRIVE_LED, LOW);
+          }
+          else
+          {
+            driveOn = true;
+            digitalWrite(DRIVE_LED, HIGH);
+          }
+          change_drive_onoff(driveOn);
+          break;
 
-          case DELAY_SWITCH_PRESSED:
-            if (tunerOn == true) break;
-            if (delayOn == true) {
-              delayOn = false;
-              digitalWrite(DELAY_LED, LOW);
-            } else {
-              delayOn = true;
-              digitalWrite(DELAY_LED, HIGH);
-            }
-            change_delay_onoff(delayOn);
+        case DELAY_SWITCH_PRESSED:
+          if (tunerOn == true)
             break;
+          if (delayOn == true)
+          {
+            delayOn = false;
+            digitalWrite(DELAY_LED, LOW);
+          }
+          else
+          {
+            delayOn = true;
+            digitalWrite(DELAY_LED, HIGH);
+          }
+          change_delay_onoff(delayOn);
+          break;
 
-          case MOD_SWITCH_PRESSED:
-            if (tunerOn == true) break;
-            if (modOn == true) {
-              modOn = false;
-              digitalWrite(MOD_LED, LOW);
-            } else {
-              modOn = true;
-              digitalWrite(MOD_LED, HIGH);
-            }
-            change_mod_onoff(modOn);
+        case MOD_SWITCH_PRESSED:
+          if (tunerOn == true)
             break;
+          if (modOn == true)
+          {
+            modOn = false;
+            digitalWrite(MOD_LED, LOW);
+          }
+          else
+          {
+            modOn = true;
+            digitalWrite(MOD_LED, HIGH);
+          }
+          change_mod_onoff(modOn);
+          break;
 
-          case REVERB_SWITCH_PRESSED:
-            if (tunerOn == true) break;
-            if (reverbOn == true) {
-              reverbOn = false;
-              digitalWrite(REVERB_LED, LOW);
-            } else {
-              reverbOn = true;
-              digitalWrite(REVERB_LED, HIGH);
-            }
-            change_reverb_onoff(reverbOn);
+        case REVERB_SWITCH_PRESSED:
+          if (tunerOn == true)
             break;
+          if (reverbOn == true)
+          {
+            reverbOn = false;
+            digitalWrite(REVERB_LED, LOW);
+          }
+          else
+          {
+            reverbOn = true;
+            digitalWrite(REVERB_LED, HIGH);
+          }
+          change_reverb_onoff(reverbOn);
+          break;
 
-          case PRESET_UP_SWITCH_PRESSED:
-            if (tunerOn == true) break;
-            new_preset++;
-            if (new_preset > 3) {
-              new_preset = 0;
-            }
-            show_preset_screen(new_preset + 1, presets[new_preset].Name);
+        case PRESET_UP_SWITCH_PRESSED:
+          if (tunerOn == true)
             break;
+          selected_preset++;
+          if (selected_preset > 3)
+          {
+            selected_preset = 0;
+          }
+          DEB("selected_preset ");
+          DEBUG(selected_preset);
+          show_preset_screen(selected_preset + 1, presets[selected_preset].Name);
+          break;
 
-          case PRESET_DOWN_SWITCH_PRESSED:
-            if (tunerOn == true) break;
-            new_preset--;
-            if (new_preset < 0) {
-              new_preset = 3;
-            }          
-            show_preset_screen(new_preset + 1, presets[new_preset].Name);
+        case PRESET_DOWN_SWITCH_PRESSED:
+          if (tunerOn == true)
             break;
+          selected_preset--;
+          if (selected_preset < 0)
+          {
+            selected_preset = 3;
+          }
+          DEB("selected_preset ");
+          DEBUG(selected_preset);
+          show_preset_screen(selected_preset + 1, presets[selected_preset].Name);
+          break;
 
-          case PRESET_SELECT_SWITCH_PRESSED:
-            if (tunerOn == true) break;
-            selected_preset = new_preset + 1;
-            change_hardware_preset(new_preset);
+        case PRESET_SELECT_SWITCH_PRESSED:
+          if (tunerOn == true)
             break;
+          current_preset = selected_preset;      
+          change_hardware_preset(selected_preset);
+          update_leds(presets[current_preset]);
+          show_preset_screen(selected_preset + 1, presets[current_preset].Name);
+          break;
 
-          case TUNER_SWITCH_PRESSED:
-            if (tunerOn == true) {
-              tunerOn = false;
-              show_preset_screen(display_preset_num, preset.Name);
-            } else {
-              tunerOn = true;
-              show_tuner_screen();
-            }
+        case TUNER_SWITCH_PRESSED:
+          if (tunerOn == true)
+          {
+            tunerOn = false;
+            show_preset_screen(display_preset_num, preset.Name);
+          }
+          else
+          {
+            tunerOn = true;
+            show_tuner_screen();
+          }
 
-            tuner_on_off(tunerOn);
-            break;
+          tuner_on_off(tunerOn);
+          break;
         }
       }
     }
   }
 }
 
-void update_leds(SparkPreset preset) {
+void update_leds(SparkPreset preset)
+{
 
-  if (preset.effects[2].OnOff == true) {
+  if (preset.effects[2].OnOff == true)
+  {
     driveOn = true;
     digitalWrite(DRIVE_LED, HIGH);
-  } else {
+  }
+  else
+  {
     driveOn = false;
     digitalWrite(DRIVE_LED, LOW);
   }
 
-  if (preset.effects[4].OnOff == true) {
+  if (preset.effects[4].OnOff == true)
+  {
     modOn = true;
     digitalWrite(MOD_LED, HIGH);
-  } else {
+  }
+  else
+  {
     modOn = false;
     digitalWrite(MOD_LED, LOW);
   }
 
-  if (preset.effects[5].OnOff == true) {
+  if (preset.effects[5].OnOff == true)
+  {
     delayOn = true;
     digitalWrite(DELAY_LED, HIGH);
-  } else {
+  }
+  else
+  {
     delayOn = false;
     digitalWrite(DELAY_LED, LOW);
   }
 
-  if (preset.effects[6].OnOff == true) {
+  if (preset.effects[6].OnOff == true)
+  {
     reverbOn = true;
     digitalWrite(REVERB_LED, HIGH);
-  } else {
+  }
+  else
+  {
     reverbOn = false;
     digitalWrite(REVERB_LED, LOW);
   }

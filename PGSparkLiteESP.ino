@@ -44,13 +44,14 @@ void setup()
 
   t1 = t2 = millis();
 
-  while (spark_state != SPARK_SYNCED) {
+  while (spark_state != SPARK_SYNCED)
+  {
     update_spark_state();
   }
 
   current_preset = preset.curr_preset;
-  new_preset = current_preset - 1;
-  show_preset_screen(current_preset, preset.Name);
+  selected_preset = current_preset;
+  show_preset_screen(preset.curr_preset + 1, preset.Name);
   update_leds(preset);
 }
 
@@ -58,17 +59,4 @@ void loop()
 {
   switch_scan();
   update_spark_state();
-
-  if (selected_preset != current_preset) {
-    DEB("selected_preset ");
-    DEBUG(selected_preset);
-
-    current_preset = selected_preset;
-    new_preset = current_preset - 1;
-    
-    if (tunerOn == false) {
-      update_leds(presets[current_preset]);
-      show_preset_screen(selected_preset + 1, presets[current_preset].Name);
-    }
-  }
 }
