@@ -187,7 +187,7 @@ bool update_spark_state()
 
           current_preset = preset.curr_preset;
           selected_preset = current_preset;
-          show_preset_screen(display_preset_num, preset.Name);
+          show_preset_screen(current_preset + 1, preset.Name);
           update_leds(preset);
         }
       }
@@ -295,7 +295,7 @@ bool update_spark_state()
       if (tunerScreenVisible == true)
       {
         lcd.clear();
-        show_preset_screen(selected_preset + 1, presets[current_preset].Name);
+        show_preset_screen(current_preset + 1, presets[current_preset].Name);
         tunerScreenVisible = false;
       }
       break;

@@ -13,15 +13,29 @@ bool is_selected()
 void show_preset_screen(int preset, String name)
 {
   lcd.clear();
-  big.writeint(0, 0, preset, 2, true);
-  if (is_selected() == true)
-  {
-    lcd.setCursor(0, 7);
-    lcd.print("*");
-  }
+  lcd.setCursor(0,0);
+  lcd.print("Preset");
+  lcd.setCursor(0,1);
+  lcd.print("------");
+  
+  big.writeint(0, 7, preset, 2, true);
 
   lcd.setCursor(0, 3);
-  lcd.print(name);
+  if (is_selected() == true)
+  {
+    lcd.print("> ");
+    lcd.print(name);
+    lcd.setCursor(18,3);
+    lcd.print(" <");
+  }
+  else
+  {
+    lcd.print("- ");
+    lcd.print(name);
+    lcd.setCursor(18,3);
+    lcd.print(" -");
+  }
+  
 }
 
 void show_splash_screen()
@@ -42,6 +56,8 @@ void show_tuner_screen()
   lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print("Tuner");
+  lcd.setCursor(0, 1);
+  lcd.print("-----");
 }
 
 void update_tuner(SparkMessage msg)
