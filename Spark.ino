@@ -184,6 +184,11 @@ bool update_spark_state()
           sp_bin.pass_through = true;
           app_bin.pass_through = true;
           DEBUG("Fully synced now");
+
+          current_preset = preset.curr_preset;
+          selected_preset = current_preset;
+          show_preset_screen(display_preset_num, preset.Name);
+          update_leds(preset);
         }
       }
 
@@ -197,29 +202,6 @@ bool update_spark_state()
       DEBUG(p, HEX);
       dump_preset_detail(preset);
 #endif
-      /*
-              if (cmdsub == 0x0301 && ui_update_in_progress == UI_HARDWARE)
-              {
-                int p = (msg.param2 == 0x7f) ? 4 : msg.param2;
-                if (msg.param1 == 0x01)  // shouldn't happen for UI_HARDWARE
-                  p = 5;
-
-                DEBUG("Updating UI - hardware");
-                DEB("Preset received ");
-                DEBUG(p);
-
-                if (p == 3 || hw_preset_requested > 3) {  // last preset received
-                  ui_update_in_progress = UI_NONE;
-                }
-                else {
-                  delay(2000);
-                  DEB("Asking for preset ");
-                  DEBUG(hw_preset_requested);
-                  app_msg_out.save_hardware_preset(0x00, hw_preset_requested++);
-                  app_process();
-                }
-              }
-      */
       break;
     // change of amp model
     case 0x0306:
@@ -299,14 +281,23 @@ bool update_spark_state()
 
     case 0x0364:
       isTunerMode = true;
-      DEB("Tuner: ");
-      DEBUG(msg.val);
+      if (tunerScreenVisible == false)
+      {
+        show_tuner_screen();
+        tunerScreenVisible = true;
+      }
       update_tuner(msg);
       break;
 
     case 0x0365:
     case 0x0465:
       isTunerMode = false;
+      if (tunerScreenVisible == true)
+      {
+        lcd.clear();
+        show_preset_screen(selected_preset + 1, presets[current_preset].Name);
+        tunerScreenVisible = false;
+      }
       break;
 
     case 0x0438:

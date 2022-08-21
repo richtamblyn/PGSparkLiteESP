@@ -13,21 +13,22 @@ bool is_selected()
 void show_preset_screen(int preset, String name)
 {
   lcd.clear();
-  lcd.setCursor(0, 0);
-  lcd.print("Preset: ");
-  lcd.print(preset);
+  big.writeint(0, 0, preset, 2, true);
   if (is_selected() == true)
   {
+    lcd.setCursor(0, 7);
     lcd.print("*");
   }
-  lcd.setCursor(0, 1);
-  lcd.print("Name: ");
+
+  lcd.setCursor(0, 3);
   lcd.print(name);
 }
 
 void show_splash_screen()
 {
   lcd.init();
+  big.begin();
+
   lcd.backlight();
   lcd.setCursor(0, 0);
   lcd.print(prog_name);
@@ -103,7 +104,7 @@ void switch_scan()
         {
 
         case DRIVE_SWITCH_PRESSED:
-          if (tunerOn == true)
+          if (isTunerMode == true)
             break;
           if (driveOn == true)
           {
@@ -119,7 +120,7 @@ void switch_scan()
           break;
 
         case DELAY_SWITCH_PRESSED:
-          if (tunerOn == true)
+          if (isTunerMode == true)
             break;
           if (delayOn == true)
           {
@@ -135,7 +136,7 @@ void switch_scan()
           break;
 
         case MOD_SWITCH_PRESSED:
-          if (tunerOn == true)
+          if (isTunerMode == true)
             break;
           if (modOn == true)
           {
@@ -151,7 +152,7 @@ void switch_scan()
           break;
 
         case REVERB_SWITCH_PRESSED:
-          if (tunerOn == true)
+          if (isTunerMode == true)
             break;
           if (reverbOn == true)
           {
@@ -167,7 +168,7 @@ void switch_scan()
           break;
 
         case PRESET_UP_SWITCH_PRESSED:
-          if (tunerOn == true)
+          if (isTunerMode == true)
             break;
           selected_preset++;
           if (selected_preset > 3)
@@ -180,7 +181,7 @@ void switch_scan()
           break;
 
         case PRESET_DOWN_SWITCH_PRESSED:
-          if (tunerOn == true)
+          if (isTunerMode == true)
             break;
           selected_preset--;
           if (selected_preset < 0)
@@ -193,7 +194,7 @@ void switch_scan()
           break;
 
         case PRESET_SELECT_SWITCH_PRESSED:
-          if (tunerOn == true)
+          if (isTunerMode == true)
             break;
           current_preset = selected_preset;
           change_hardware_preset(selected_preset);
@@ -202,19 +203,15 @@ void switch_scan()
           break;
 
         case TUNER_SWITCH_PRESSED:
-          if (tunerOn == true)
+          if (isTunerMode == true)
           {
-            tunerOn = false;
-            lcd.clear();
-            show_preset_screen(selected_preset + 1, presets[current_preset].Name);
+            tuner_on_off(false);
           }
           else
           {
-            tunerOn = true;
-            show_tuner_screen();
+            tuner_on_off(true);
           }
 
-          tuner_on_off(tunerOn);
           break;
         }
       }

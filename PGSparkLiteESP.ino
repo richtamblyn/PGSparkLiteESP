@@ -8,6 +8,7 @@ bool setting_modified = false;
 char param_str[50];
 int param = -1;
 bool isTunerMode;
+bool tunerScreenVisible = false;
 bool scan_result = false;
 
 int new_preset;
@@ -48,11 +49,6 @@ void setup()
   {
     update_spark_state();
   }
-
-  current_preset = preset.curr_preset;
-  selected_preset = current_preset;
-  show_preset_screen(preset.curr_preset + 1, preset.Name);
-  update_leds(preset);
 }
 
 void loop()
