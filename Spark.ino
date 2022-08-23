@@ -57,6 +57,7 @@ bool update_spark_state()
     spark_state = SPARK_DISCONNECTED;
     spark_ping_timer = millis();
     DEBUG("Spark disconnected, try to reconnect...");
+    connection_lost();
   }
 
   if (spark_state == SPARK_DISCONNECTED)
@@ -72,6 +73,10 @@ bool update_spark_state()
   {
     spark_state = SPARK_CONNECTED;
     DEBUG("Spark connected");
+    current_preset = preset.curr_preset;
+    selected_preset = current_preset;
+    show_preset_screen(current_preset + 1, preset.Name);
+    update_leds(preset);
   }
 
   if (spark_state == SPARK_CONNECTED)
@@ -93,8 +98,6 @@ bool update_spark_state()
         DEBUG("**** Preset not received, trying again");
       sync_timer = millis();
       spark_msg_out.get_preset_details((preset_requested == 5) ? 0x0100 : preset_requested);
-      //      if (preset_requested <= 3)
-      //        spark_msg_out.change_hardware_preset(0, preset_requested);
       preset_received = false;
       DEB("Requested a preset: ");
       DEBUG(preset_requested);
@@ -221,6 +224,7 @@ bool update_spark_state()
       if (ind >= 0)
         presets[5].effects[ind].OnOff = msg.onoff;
       setting_modified = true;
+      update_leds(presets[5]);
       break;
     // change parameter value
     case 0x0104:

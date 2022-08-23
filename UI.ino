@@ -1,3 +1,11 @@
+void connection_lost(){
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("Connection lost!");
+  lcd.setCursor(0,1);
+  lcd.print("Reconnecting...");
+}
+
 bool is_selected()
 {
   if (selected_preset == current_preset)
@@ -35,7 +43,6 @@ void show_preset_screen(int preset, String name)
     lcd.setCursor(18,3);
     lcd.print(" -");
   }
-  
 }
 
 void show_splash_screen()
@@ -108,6 +115,11 @@ void switch_scan()
   if (millis() - t2 > 100)
   {
     t2 = millis();
+
+    if (spark_state == SPARK_DISCONNECTED){
+      return;
+    }
+
     // GPIO process
     for (int i = 0; i < NUM_SWITCHES; i++)
     {
