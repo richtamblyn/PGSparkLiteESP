@@ -1,8 +1,9 @@
-void connection_lost(){
+void connection_lost()
+{
   lcd.clear();
-  lcd.setCursor(0,0);
+  lcd.setCursor(0, 0);
   lcd.print("Connection lost!");
-  lcd.setCursor(0,1);
+  lcd.setCursor(0, 1);
   lcd.print("Reconnecting...");
 }
 
@@ -21,11 +22,11 @@ bool is_selected()
 void show_preset_screen(int preset, String name)
 {
   lcd.clear();
-  lcd.setCursor(0,0);
+  lcd.setCursor(0, 0);
   lcd.print("Preset");
-  lcd.setCursor(0,1);
+  lcd.setCursor(0, 1);
   lcd.print("------");
-  
+
   big.writeint(0, 7, preset, 2, true);
 
   lcd.setCursor(0, 3);
@@ -33,14 +34,14 @@ void show_preset_screen(int preset, String name)
   {
     lcd.print("> ");
     lcd.print(name);
-    lcd.setCursor(18,3);
+    lcd.setCursor(18, 3);
     lcd.print(" <");
   }
   else
   {
     lcd.print("- ");
     lcd.print(name);
-    lcd.setCursor(18,3);
+    lcd.setCursor(18, 3);
     lcd.print(" -");
   }
 }
@@ -102,31 +103,38 @@ void update_tuner(SparkMessage msg)
   }
 }
 
-void switch_scan()
-{
-  if (millis() - t1 > 5000)
+bool debounce_switch(int pressed)
+{ 
+  if (millis() - debounce_timer < 400 && pressed == last_pressed)
   {
-    t1 = millis();
-    // time process
-    //    new_preset++;
-    //    if (new_preset > 3) new_preset = 0;
+    return true;
   }
 
-  if (millis() - t2 > 100)
-  {
-    t2 = millis();
+  return false;
+}
 
-    if (spark_state == SPARK_DISCONNECTED){
+void switch_scan()
+{
+  if (millis() - switch_timer > 100)
+  {
+    switch_timer = millis();
+
+    if (spark_state == SPARK_DISCONNECTED)
+    {
       return;
     }
 
-    // GPIO process
     for (int i = 0; i < NUM_SWITCHES; i++)
     {
       if (digitalRead(switchPins[i]) == 0)
-      {
-        Serial.print("Got a switch ");
-        Serial.println(i);
+      {     
+        if (debounce_switch(i) == true)
+        {
+          return;
+        }
+
+        debounce_timer = millis();
+        last_pressed = i;
 
         switch (i)
         {

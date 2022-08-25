@@ -43,7 +43,7 @@ void setup()
   lcd.setCursor(0, 3);
   lcd.print("Loading Presets...");
 
-  t1 = t2 = millis();
+  switch_timer = millis();
 
   while (spark_state != SPARK_SYNCED)
   {

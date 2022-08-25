@@ -13,7 +13,7 @@ int lcdRows = 4;
 LiquidCrystal_I2C lcd(0x27, lcdColumns, lcdRows);
 BigFont02_I2C     big(&lcd);
 
-unsigned long t1, t2;
+unsigned long switch_timer, debounce_timer;
 
 bool driveOn = false;
 bool delayOn = false;
@@ -22,5 +22,7 @@ bool reverbOn = false;
 
 const String note_names[] = {"...","C","C#","D","D#","E","F","F#","G","G#","A","A#","B","..."};
 bool ignoreTuner = false;
+
+int last_pressed;
 
 #endif
